@@ -3,15 +3,12 @@ package com.dim.weatherapp.weather.ui.presenters.weather_screen
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,13 +35,20 @@ fun WeatherScreenRoot(
 
     val state by viewModel.state.collectAsStateWithLifecycle()
 
+    val recent: List<String> by viewModel.getRecentCities().collectAsState()
+
     when (val uiState = state) {
         is WeatherUiState.Loading -> {
             CircularProgressIndicator()
         }
 
         is WeatherUiState.Success -> {
-            WeatherScreen(weatherUiModel = uiState.weatherUiModel)
+            WeatherScreen(
+                weatherUiModel = uiState.weatherUiModel,
+                recentSearches = recent,
+                onSearchClick = { city ->
+                    viewModel.getWeatherByCity(city)
+                })
         }
 
         is WeatherUiState.Error -> {
@@ -61,7 +65,7 @@ fun WeatherScreen(
     onCityNameChange: (String) -> Unit = {},
     recentSearches: List<String> = listOf(),
     onRecentSearchClick: (String) -> Unit = {},
-    onSearchClick: () -> Unit = {}
+    onSearchClick: (String) -> Unit = {},
 ) {
     Column(
         modifier = modifier.fillMaxSize()
@@ -80,21 +84,8 @@ fun WeatherScreen(
 
         SearchBar(
             cityName = weatherUiModel.cityName,
-            onCityNameChange = onCityNameChange
+            onSearchClicked = onSearchClick
         )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Button(
-            onClick = onSearchClick,
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(8.dp)
-
-        ) {
-            Spacer(modifier = Modifier.width(4.dp))
-
-            Text("Search")
-        }
 
         Spacer(modifier = Modifier.height(24.dp))
 

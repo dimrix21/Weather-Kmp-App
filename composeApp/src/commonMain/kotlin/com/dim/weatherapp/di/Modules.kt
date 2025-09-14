@@ -2,9 +2,11 @@ package com.dim.weatherapp.di
 
 
 import com.dim.weatherapp.core.data.HttpClientFactory
+import com.dim.weatherapp.weather.data.local.RecentCitiesRepositoryImp
 import com.dim.weatherapp.weather.data.remote.CoordinatesRepositoryImp
 import com.dim.weatherapp.weather.data.remote.WeatherRepositoryImp
 import com.dim.weatherapp.weather.domain.repository.CoordinatesRepository
+import com.dim.weatherapp.weather.domain.repository.RecentCitiesRepository
 import com.dim.weatherapp.weather.domain.repository.WeatherRepository
 import com.dim.weatherapp.weather.domain.usecases.GetWeatherByCityUseCase
 import com.dim.weatherapp.weather.ui.presenters.weather_screen.WeatherViewModel
@@ -22,7 +24,8 @@ val sharedModules = module {
 
     single<WeatherRepository> { WeatherRepositoryImp(get()) }
     single<CoordinatesRepository> { CoordinatesRepositoryImp(get()) }
-    single<GetWeatherByCityUseCase> { GetWeatherByCityUseCase(get(), get()) }
-    viewModel { WeatherViewModel(get()) }
+    single<RecentCitiesRepository> { RecentCitiesRepositoryImp() }
+    single<GetWeatherByCityUseCase> { GetWeatherByCityUseCase(get(), get(), get()) }
+    viewModel { WeatherViewModel(get(), get()) }
 
 }

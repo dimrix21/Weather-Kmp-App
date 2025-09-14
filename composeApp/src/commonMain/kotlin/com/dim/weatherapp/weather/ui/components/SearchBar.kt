@@ -1,11 +1,19 @@
 package com.dim.weatherapp.weather.ui.components
 
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -14,13 +22,15 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun SearchBar(
-    modifier: Modifier = Modifier,
     cityName: String,
-    onCityNameChange: (String) -> Unit,
+    onSearchClicked: (String) -> Unit,
 ) {
+
+    var currentValue by remember { mutableStateOf(cityName) }
+
     OutlinedTextField(
-        value = cityName,
-        onValueChange = onCityNameChange,
+        value = currentValue,
+        onValueChange = { currentValue = it },
         placeholder = { Text("Enter a city name", color = Color(0xFFB0B0B3)) },
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(8.dp),
@@ -30,13 +40,26 @@ fun SearchBar(
         ),
         singleLine = true
     )
+
+    Spacer(modifier = Modifier.height(8.dp))
+
+    Button(
+        onClick = { onSearchClicked(currentValue) },
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(8.dp)
+
+    ) {
+        Spacer(modifier = Modifier.width(4.dp))
+
+        Text("Search")
+    }
 }
 
 @Preview
 @Composable
 fun SearchBarPreview() {
     WeatherAppTheme {
-        SearchBar(cityName = "", onCityNameChange = {})
+        SearchBar(cityName = "", onSearchClicked = {})
     }
 
 }
