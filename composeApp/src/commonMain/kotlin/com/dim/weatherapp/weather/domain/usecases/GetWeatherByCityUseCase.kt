@@ -1,14 +1,25 @@
 package com.dim.weatherapp.weather.domain.usecases
 
-import com.dim.weatherapp.weather.data.model.WeatherData
+import com.dim.weatherapp.weather.data.model.WeatherResponseDto
+import com.dim.weatherapp.weather.domain.mappers.toUiModel
+import com.dim.weatherapp.weather.domain.model.WeatherUiModel
+import com.dim.weatherapp.weather.domain.repository.CoordinatesRepository
 import com.dim.weatherapp.weather.domain.repository.WeatherRepository
 
 class GetWeatherByCityUseCase(
-    private val weatherRepository: WeatherRepository
+    private val weatherRepository: WeatherRepository,
+    private val coordinatesRepository: CoordinatesRepository
 
 ) {
-    suspend operator fun invoke(city: String): WeatherData {
-        return weatherRepository.getWeatherByLocation(city)
+    suspend operator fun invoke(city: String): WeatherUiModel {
+        val coordinateDto = coordinatesRepository.getCoordinatesByCity(city)
+
+        val coordinates = coordinateDto.features.firstOrNull()?.geometry?.coordinates
+        val lat = coordinates?.getOrNull(1) ?: 0.0
+        val lon = coordinates?.getOrNull(0) ?: 0.0
+
+        return weatherRepository.getWeatherByLocation(lat, lon).toUiModel()
+
     }
 
 }

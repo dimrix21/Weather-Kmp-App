@@ -1,6 +1,7 @@
 package com.dim.weatherapp.weather.ui.presenters
 
-import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
@@ -44,19 +45,8 @@ fun MainScreen(
             )
         },
     ) { paddingValues ->
-        WeatherScreenRoot(
-            cityName = cityName,
-            onCityNameChange = { cityName = it },
-            recentSearches = recentSearches,
-            onRecentSearchClick = { cityName = it },
-            onSearchClick = { /* TODO: Implement search functionality based on cityName */ },
-            temperature = temperature,
-            condition = condition,
-            humidity = humidity,
-            windSpeed = windSpeed,
-            modifier = Modifier
-                .background(Color(0xFF2C2C2E))
-                .padding(paddingValues)
-        )
+        Box(Modifier.fillMaxSize().padding(paddingValues)) {
+            WeatherScreenRoot()
+        }
     }
 }

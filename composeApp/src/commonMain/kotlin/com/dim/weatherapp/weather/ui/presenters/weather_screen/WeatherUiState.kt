@@ -1,8 +1,14 @@
 package com.dim.weatherapp.weather.ui.presenters.weather_screen
 
-data class WeatherUiState (
-//    val weatherInfo: WeatherInfo? = null,
-    val isLoading: Boolean = false,
-    val error: String? = null
+import com.dim.weatherapp.weather.domain.model.WeatherUiModel
 
-)
+
+sealed interface WeatherUiState {
+
+    data object Loading : WeatherUiState
+    data class Success(
+        val weatherUiModel: WeatherUiModel
+    ) : WeatherUiState
+
+    data class Error(val message: String) : WeatherUiState
+}
