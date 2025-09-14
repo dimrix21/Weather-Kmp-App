@@ -8,8 +8,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -36,39 +40,13 @@ fun WeatherScreenRoot(
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     val recent: List<String> by viewModel.getRecentCities().collectAsState()
+    var currentSearch by remember { mutableStateOf("") }
 
-    when (val uiState = state) {
-        is WeatherUiState.Loading -> {
-            CircularProgressIndicator()
-        }
-
-        is WeatherUiState.Success -> {
-            WeatherScreen(
-                weatherUiModel = uiState.weatherUiModel,
-                recentSearches = recent,
-                onSearchClick = { city ->
-                    viewModel.getWeatherByCity(city)
-                })
-        }
-
-        is WeatherUiState.Error -> {
-
-        }
+    LaunchedEffect(recent) {
+        println("recent: $recent")
     }
-
-}
-
-@Composable
-fun WeatherScreen(
-    modifier: Modifier = Modifier,
-    weatherUiModel: WeatherUiModel,
-    onCityNameChange: (String) -> Unit = {},
-    recentSearches: List<String> = listOf(),
-    onRecentSearchClick: (String) -> Unit = {},
-    onSearchClick: (String) -> Unit = {},
-) {
     Column(
-        modifier = modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize()
             .padding(12.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -83,12 +61,67 @@ fun WeatherScreen(
         Spacer(modifier = Modifier.height(16.dp))
 
         SearchBar(
-            cityName = weatherUiModel.cityName,
-            onSearchClicked = onSearchClick
+            cityName = currentSearch,
+            onSearchClicked = { city ->
+                currentSearch = city
+                viewModel.getWeatherByCity(city)
+            }
         )
 
         Spacer(modifier = Modifier.height(24.dp))
 
+        when (val uiState = state) {
+            is WeatherUiState.Loading -> {
+                CircularProgressIndicator()
+            }
+
+            is WeatherUiState.Success -> {
+                WeatherDetails(
+                    weatherUiModel = uiState.weatherUiModel
+                )
+            }
+
+            is WeatherUiState.Error -> {
+                Text(
+                    text = "Error: ${uiState.message}",
+                    color = Color.Red
+                )
+
+            }
+        }
+
+        if (recent.isNotEmpty()) {
+            Spacer(modifier = Modifier.height(24.dp))
+
+            Text(
+                text = "Recent Searches",
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.White,
+                modifier = Modifier.align(Alignment.Start)
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            RecentSearchChips(
+                recentSearches = recent,
+                onRecentSearchClick = { city ->
+                    currentSearch = city
+                    viewModel.getWeatherByCity(city)
+                }
+            )
+        }
+
+    }
+}
+
+@Composable
+fun WeatherDetails(
+    weatherUiModel: WeatherUiModel
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         WeatherInfoCard(
             city = weatherUiModel.cityName,
             temperature = weatherUiModel.temperature,
@@ -96,23 +129,6 @@ fun WeatherScreen(
             humidity = weatherUiModel.humidity,
             windSpeed = weatherUiModel.windSpeed,
             weatherIcon = painterResource(Res.drawable.ic_cloud)
-        )
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        Text(
-            text = "Recent Searches",
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color.White,
-            modifier = Modifier.align(Alignment.Start)
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        RecentSearchChips(
-            recentSearches = recentSearches,
-            onRecentSearchClick = onRecentSearchClick
         )
 
     }

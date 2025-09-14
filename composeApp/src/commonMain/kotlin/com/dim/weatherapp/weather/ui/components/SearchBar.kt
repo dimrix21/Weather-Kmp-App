@@ -26,7 +26,7 @@ fun SearchBar(
     onSearchClicked: (String) -> Unit,
 ) {
 
-    var currentValue by remember { mutableStateOf(cityName) }
+    var currentValue by remember(cityName) { mutableStateOf(cityName) }
 
     OutlinedTextField(
         value = currentValue,
