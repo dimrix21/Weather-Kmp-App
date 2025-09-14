@@ -17,4 +17,8 @@ val TextTitleColor = Color(0xFF8ab3e9)
 val CardWeatherBackground = Color(0xFF1b232c)
 val CardSmallWeatherBackground = Color(0xFF252d36)
 
+val WeatherIconBackground = Color(0xFF1e2c74)
+
+
+
 

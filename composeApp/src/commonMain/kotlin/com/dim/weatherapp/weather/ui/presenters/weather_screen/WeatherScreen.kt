@@ -128,7 +128,7 @@ fun WeatherDetails(
             condition = weatherUiModel.description,
             humidity = weatherUiModel.humidity,
             windSpeed = weatherUiModel.windSpeed,
-            weatherIcon = painterResource(Res.drawable.ic_cloud)
+            weatherIcon = weatherUiModel.iconUrl
         )
 
     }
