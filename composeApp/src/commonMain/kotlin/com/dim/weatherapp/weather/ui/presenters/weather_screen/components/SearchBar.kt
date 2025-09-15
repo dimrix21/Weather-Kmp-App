@@ -1,4 +1,4 @@
-package com.dim.weatherapp.weather.ui.components
+package com.dim.weatherapp.weather.ui.presenters.weather_screen.components
 
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth

@@ -6,9 +6,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -23,13 +23,10 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.dim.weatherapp.core.presentation.theme.TextTitleColor
 import com.dim.weatherapp.weather.domain.model.WeatherUiModel
-import com.dim.weatherapp.weather.ui.components.RecentSearchChips
-import com.dim.weatherapp.weather.ui.components.SearchBar
-import com.dim.weatherapp.weather.ui.components.WeatherInfoCard
-import org.jetbrains.compose.resources.painterResource
+import com.dim.weatherapp.weather.ui.presenters.weather_screen.components.RecentSearchChips
+import com.dim.weatherapp.weather.ui.presenters.weather_screen.components.SearchBar
+import com.dim.weatherapp.weather.ui.presenters.weather_screen.components.WeatherInfoCard
 import org.koin.compose.viewmodel.koinViewModel
-import weatherapp.composeapp.generated.resources.Res
-import weatherapp.composeapp.generated.resources.ic_cloud
 
 
 @Composable
@@ -39,27 +36,27 @@ fun WeatherScreenRoot(
 
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    val recent: List<String> by viewModel.getRecentCities().collectAsState()
+    val recentSearches: List<String> by viewModel.getRecentCities().collectAsState()
     var currentSearch by remember { mutableStateOf("") }
 
-    LaunchedEffect(recent) {
-        println("recent: $recent")
-    }
+
     Column(
         modifier = Modifier.fillMaxSize()
             .padding(12.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
+        // Title
         Text(
             text = "Enter a city name to get the current weather conditions",
-            fontSize = 14.sp,
+            style = MaterialTheme.typography.bodyMedium,
             color = TextTitleColor,
             modifier = Modifier.align(Alignment.Start)
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        // Search Bar with Button
         SearchBar(
             cityName = currentSearch,
             onSearchClicked = { city ->
@@ -70,6 +67,7 @@ fun WeatherScreenRoot(
 
         Spacer(modifier = Modifier.height(24.dp))
 
+        // Weather Details via search result
         when (val uiState = state) {
             is WeatherUiState.Loading -> {
                 CircularProgressIndicator()
@@ -90,7 +88,8 @@ fun WeatherScreenRoot(
             }
         }
 
-        if (recent.isNotEmpty()) {
+        // Recent Searches
+        if (recentSearches.isNotEmpty()) {
             Spacer(modifier = Modifier.height(24.dp))
 
             Text(
@@ -104,7 +103,7 @@ fun WeatherScreenRoot(
             Spacer(modifier = Modifier.height(8.dp))
 
             RecentSearchChips(
-                recentSearches = recent,
+                recentSearches = recentSearches,
                 onRecentSearchClick = { city ->
                     currentSearch = city
                     viewModel.getWeatherByCity(city)

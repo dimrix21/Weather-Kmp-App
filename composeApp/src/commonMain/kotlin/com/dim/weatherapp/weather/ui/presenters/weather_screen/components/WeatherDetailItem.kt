@@ -1,4 +1,4 @@
-package com.dim.weatherapp.weather.ui.components
+package com.dim.weatherapp.weather.ui.presenters.weather_screen.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
