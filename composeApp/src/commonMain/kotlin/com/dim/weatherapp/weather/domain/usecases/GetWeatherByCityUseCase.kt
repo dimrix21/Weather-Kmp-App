@@ -9,19 +9,28 @@ import com.dim.weatherapp.weather.domain.repository.WeatherRepository
 class GetWeatherByCityUseCase(
     private val weatherRepository: WeatherRepository,
     private val coordinatesRepository: CoordinatesRepository,
-    private val recentCitiesRepository: RecentCitiesRepository // Added new repository
+    private val recentCitiesRepository: RecentCitiesRepository
 ) {
-    suspend operator fun invoke(city: String): WeatherUiModel {
-        val coordinateDto = coordinatesRepository.getCoordinatesByCity(city)
+    suspend operator fun invoke(city: String): Result<WeatherUiModel> {
+        val coordinates = coordinatesRepository.getCoordinatesByCity(city)
+            .getOrElse { error ->
+                return Result.failure(error)
+            }
 
-        val coordinates = coordinateDto.features.firstOrNull()?.geometry?.coordinates
-        val lat = coordinates?.getOrNull(1) ?: 0.0
-        val lon = coordinates?.getOrNull(0) ?: 0.0
+        val coordinatesLocation = coordinates.features.getOrNull(0)?.geometry?.coordinates
 
-        val result = weatherRepository.getWeatherByLocation(lat, lon).toUiModel()
+        if (coordinatesLocation == null) {
+            return Result.failure(Exception("Invalid coordinates"))
+        }
 
-        recentCitiesRepository.addCity(city)
+        val lat = coordinatesLocation.getOrNull(1) ?: 0.0
+        val lon = coordinatesLocation.getOrNull(0) ?: 0.0
 
-        return result
+
+        return weatherRepository.getWeatherByLocation(lat, lon)
+            .onSuccess {
+                recentCitiesRepository.addCity(city)
+            }
+            .map { it.toUiModel() }
     }
 }

@@ -26,8 +26,11 @@ class WeatherViewModel(
     fun getWeatherByCity(city: String) {
         viewModelScope.launch {
             _state.emit(WeatherUiState.Loading)
-            val weatherData = getWeatherByCityUseCase.invoke(city)
-            _state.emit(WeatherUiState.Success(weatherUiModel = weatherData))
+            getWeatherByCityUseCase.invoke(city).onSuccess {
+                _state.emit(WeatherUiState.Success(weatherUiModel = it))
+            }.onFailure {
+                _state.emit(WeatherUiState.Error(it.message ?: "Unknown error"))
+            }
 
         }
     }
