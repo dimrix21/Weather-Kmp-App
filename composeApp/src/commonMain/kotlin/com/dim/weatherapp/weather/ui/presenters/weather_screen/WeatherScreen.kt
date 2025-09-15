@@ -11,9 +11,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -24,8 +21,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.dim.weatherapp.core.presentation.theme.TextTitleColor
 import com.dim.weatherapp.weather.domain.model.WeatherUiModel
 import com.dim.weatherapp.weather.ui.presenters.weather_screen.components.RecentSearchChips
-import com.dim.weatherapp.weather.ui.presenters.weather_screen.components.SearchBar
 import com.dim.weatherapp.weather.ui.presenters.weather_screen.components.WeatherInfoCard
+import com.dim.weatherapp.weather.ui.presenters.weather_screen.components.search_bar.SearchBar
 import org.koin.compose.viewmodel.koinViewModel
 
 
@@ -37,8 +34,6 @@ fun WeatherScreenRoot(
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     val recentSearches: List<String> by viewModel.getRecentCities().collectAsState()
-    var currentSearch by remember { mutableStateOf("") }
-
 
     Column(
         modifier = Modifier.fillMaxSize()
@@ -58,9 +53,7 @@ fun WeatherScreenRoot(
 
         // Search Bar with Button
         SearchBar(
-            cityName = currentSearch,
             onSearchClicked = { city ->
-                currentSearch = city
                 viewModel.getWeatherByCity(city)
             }
         )
@@ -105,7 +98,6 @@ fun WeatherScreenRoot(
             RecentSearchChips(
                 recentSearches = recentSearches,
                 onRecentSearchClick = { city ->
-                    currentSearch = city
                     viewModel.getWeatherByCity(city)
                 }
             )

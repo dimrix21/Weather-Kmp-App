@@ -24,15 +24,16 @@ class WeatherViewModel(
     }
 
     fun getWeatherByCity(city: String) {
-        viewModelScope.launch {
-            _state.emit(WeatherUiState.Loading)
-            getWeatherByCityUseCase.invoke(city).onSuccess {
-                _state.emit(WeatherUiState.Success(weatherUiModel = it))
-            }.onFailure {
-                _state.emit(WeatherUiState.Error(it.message ?: "Unknown error"))
-            }
+        if (city.isNotEmpty())
+            viewModelScope.launch {
+                _state.emit(WeatherUiState.Loading)
+                getWeatherByCityUseCase.invoke(city).onSuccess {
+                    _state.emit(WeatherUiState.Success(weatherUiModel = it))
+                }.onFailure {
+                    _state.emit(WeatherUiState.Error(it.message ?: "Unknown error"))
+                }
 
-        }
+            }
     }
 
     fun getRecentCities(): StateFlow<List<String>> {

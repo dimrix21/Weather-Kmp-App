@@ -26,10 +26,9 @@ class GetWeatherByCityUseCase(
         val lat = coordinatesLocation.getOrNull(1) ?: 0.0
         val lon = coordinatesLocation.getOrNull(0) ?: 0.0
 
-
         return weatherRepository.getWeatherByLocation(lat, lon)
             .onSuccess {
-                recentCitiesRepository.addCity(city)
+                recentCitiesRepository.addCity(it.name)
             }
             .map { it.toUiModel() }
     }

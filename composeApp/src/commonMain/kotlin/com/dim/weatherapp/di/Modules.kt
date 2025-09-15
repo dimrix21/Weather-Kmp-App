@@ -8,8 +8,10 @@ import com.dim.weatherapp.weather.data.remote.WeatherRepositoryImp
 import com.dim.weatherapp.weather.domain.repository.CoordinatesRepository
 import com.dim.weatherapp.weather.domain.repository.RecentCitiesRepository
 import com.dim.weatherapp.weather.domain.repository.WeatherRepository
+import com.dim.weatherapp.weather.domain.usecases.GetCityOptionsUseCase
 import com.dim.weatherapp.weather.domain.usecases.GetWeatherByCityUseCase
 import com.dim.weatherapp.weather.ui.presenters.weather_screen.WeatherViewModel
+import com.dim.weatherapp.weather.ui.presenters.weather_screen.components.search_bar.SearchBarViewModel
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
@@ -26,6 +28,8 @@ val sharedModules = module {
     single<CoordinatesRepository> { CoordinatesRepositoryImp(get()) }
     single<RecentCitiesRepository> { RecentCitiesRepositoryImp() }
     single<GetWeatherByCityUseCase> { GetWeatherByCityUseCase(get(), get(), get()) }
+    single<GetCityOptionsUseCase> { GetCityOptionsUseCase(get()) }
     viewModel { WeatherViewModel(get(), get()) }
+    viewModel { SearchBarViewModel(get()) }
 
 }

@@ -4,7 +4,6 @@ import com.dim.weatherapp.core.data.safeCall
 import com.dim.weatherapp.weather.data.model.LocationResponseDto
 import com.dim.weatherapp.weather.domain.repository.CoordinatesRepository
 import io.ktor.client.HttpClient
-import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 
@@ -19,9 +18,14 @@ class CoordinatesRepositoryImp(private val client: HttpClient) : CoordinatesRepo
                 parameter("limit", "1")
             }
         }
+    }
 
-//        val response =
-//
-//        return response
+    override suspend fun getNamesByText(text: String): Result<LocationResponseDto> {
+        return safeCall<LocationResponseDto> {
+            client.get(BASE_URL) {
+                parameter("q", text)
+                parameter("limit", "5")
+            }
+        }
     }
 }
